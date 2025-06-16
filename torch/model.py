@@ -133,7 +133,7 @@ class DeepCF(nn.Module):
         return preds, U_embedding, V_embedding
 
     @torch.no_grad()
-    def evaluate(self, recall_k, eval_data, device=None):
+    def evaluate(self, recall_k, eval_data, evaluate_name, device=None ):
         """
         given EvalData runs batch evaluation
         :param recall_k: list of thresholds to compute recall at (information retrieval recall)
@@ -173,11 +173,22 @@ class DeepCF(nn.Module):
                 eval_trainR = eval_data.tf_eval_train[batch]
                 embedding_prod = embedding_prod + eval_trainR
 
-            _, eval_preds = torch.topk(embedding_prod, k=recall_k[-1], sorted=True)
+            # _, eval_preds = torch.topk(embedding_prod, k=recall_k[-1], sorted=True)
+            # tf_eval_preds_batch.append(eval_preds.detach().cpu().numpy())
+
+            _, eval_preds = torch.topk(embedding_prod, k=100, sorted=True)
             tf_eval_preds_batch.append(eval_preds.detach().cpu().numpy())
 
 
         tf_eval_preds = np.concatenate(tf_eval_preds_batch)
+
+        if evaluate_name == "warm":
+            np.savetxt("ml-1m_member_recommendations.txt", tf_eval_preds)
+
+        if evaluate_name == "cold_user":
+            np.savetxt("ml-1m_cold_user_recommendations.txt", tf_eval_preds)
+
+
 
         # filter non-zero targets
         y_nz = [len(x) > 0 for x in eval_data.R_test_inf.rows]
