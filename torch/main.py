@@ -363,7 +363,10 @@ if __name__ == "__main__":
     parser.add_argument('--rank', type=int, default=200, help='output rank of latent model')
     parser.add_argument('--dropout', type=float, default=0.5, help='DropoutNet dropout')
     parser.add_argument('--eval_every', type=int, default=2, help='evaluate every X user-batch')
+
+    # 我把 learning rate 调小了十倍，原作者设置的值是 0.005
     parser.add_argument('--lr', type=float, default=0.0005, help='starting learning rate')
+
 
     args = parser.parse_args()
     main()
