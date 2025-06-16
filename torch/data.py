@@ -12,8 +12,9 @@ This module contains class and methods related to data used in DropoutNet
 def load_eval_data(test_file, test_id_file, name, cold, train_data, citeu=False):
     timer = utils.timer(name='utils')
     with open(test_id_file) as f:
-        test_item_ids = [int(line) for line in f]
-        test_data = pd.read_csv(test_file, delimiter=",", header=None, dtype=np.int32).values.ravel()
+        # test_item_ids = [int(line) for line in f]
+        test_item_ids = [int(float(line.strip())) for line in f]
+        test_data = pd.read_csv(test_file, delimiter=",", dtype=np.int32).values.ravel()
         if citeu:
             test_data = test_data.view(
             dtype=[('uid', np.int32), ('iid', np.int32), ('inter', np.int32)])
@@ -114,7 +115,8 @@ class EvalData:
         self.V_content_test = item_content[self.test_item_ids, :]
         if scipy.sparse.issparse(self.V_content_test):
             self.V_content_test = self.V_content_test.todense()
-        if user_content!=None:
+        # if user_content!=None:
+        if user_content is not None:
             self.U_content_test = user_content[self.test_user_ids, :]
             if scipy.sparse.issparse(self.U_content_test):
                 self.U_content_test = self.U_content_test.todense()

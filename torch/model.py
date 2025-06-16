@@ -154,12 +154,12 @@ class DeepCF(nn.Module):
             else:
                 Ucontent = None
 
-            Uin = torch.tensor(Uin)
-            Vin = torch.tensor(Vin)
+            Uin = torch.tensor(Uin).to(torch.float32)
+            Vin = torch.tensor(Vin).to(torch.float32)
             if Ucontent is not None:
-                Ucontent = torch.tensor(Ucontent)
+                Ucontent = torch.tensor(Ucontent).to(torch.float32)
             if Vcontent is not None:
-                Vcontent = torch.tensor(Vcontent)
+                Vcontent = torch.tensor(Vcontent).to(torch.float32)
             if d is not None:
                 Uin = Uin.to(d)
                 Vin = Vin.to(d)
