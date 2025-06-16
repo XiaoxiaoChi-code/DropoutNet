@@ -304,7 +304,7 @@ def load_content_data():
 
 def load_data():
     # preference data file
-    user_preference_file = "contentData/MovieLens_usersEmbedding_200.csv"
+    user_preference_file = "contentData/MovieLens_masked_usersEmbedding_200.csv"
     item_preference_file = "contentData/MovieLens_itemsEmbedding_200.csv"
 
     # content data file
