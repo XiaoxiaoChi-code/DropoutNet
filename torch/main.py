@@ -181,8 +181,9 @@ def main():
                 dropout_net.to(d_eval)
                 dropout_net.eval()
 
-                recall_warm      = dropout_net.evaluate(recall_k=recall_at, eval_data=eval_warm,      device=d_eval)
-                recall_cold_user = dropout_net.evaluate(recall_k=recall_at, eval_data=eval_cold_user, device=d_eval)
+                recall_warm      = dropout_net.evaluate(recall_k=recall_at, eval_data=eval_warm,      name="warm",      device=d_eval)
+                recall_cold_user = dropout_net.evaluate(recall_k=recall_at, eval_data=eval_cold_user, name="cold_user", device=d_eval)
+
                 # recall_cold_item = dropout_net.evaluate(recall_k=recall_at, eval_data=eval_cold_item, device=d_eval)
 
                 dropout_net.to(d_train)
