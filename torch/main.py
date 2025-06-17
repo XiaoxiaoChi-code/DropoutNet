@@ -49,6 +49,7 @@ def main():
     v_pref_scaled = dat['v_pref_scaled']
     eval_warm = dat['eval_warm']
     eval_cold_user = dat['eval_cold_user']
+    eval_refe_user = dat['eval_refe_user']
     # eval_cold_item = dat['eval_cold_item']
     user_content = dat['user_content']
     item_content = dat['item_content']
@@ -181,8 +182,9 @@ def main():
                 dropout_net.to(d_eval)
                 dropout_net.eval()
 
-                recall_warm      = dropout_net.evaluate(recall_k=recall_at, eval_data=eval_warm,      name="warm",      device=d_eval)
-                recall_cold_user = dropout_net.evaluate(recall_k=recall_at, eval_data=eval_cold_user, name="cold_user", device=d_eval)
+                recall_warm      = dropout_net.evaluate(recall_k=recall_at, eval_data=eval_warm,      evaluate_name="warm",      device=d_eval)
+                recall_cold_user = dropout_net.evaluate(recall_k=recall_at, eval_data=eval_cold_user, evaluate_name="cold_user", device=d_eval)
+                dropout_net.evaluate_reference(eval_data=eval_refe_user, device=d_eval)
 
                 # recall_cold_item = dropout_net.evaluate(recall_k=recall_at, eval_data=eval_cold_item, device=d_eval)
 
@@ -318,6 +320,9 @@ def load_data():
     test_cold_user_file = "processedData/testing_data_nonmems.csv"
     test_cold_user_iid_file = "contentData/item_ids.txt"
 
+    test_reference_user_file = "processedData/train_data.csv"
+    test_rfeference_user_iid_file = "contentData/item_ids.txt"
+
     dat = {}
     u_pref = pd.read_csv(user_preference_file, header=None).to_numpy()
     v_pref = pd.read_csv(item_preference_file, header=None).to_numpy()
@@ -331,6 +336,8 @@ def load_data():
 
     dat['item_content'] = items_content_vectors
     dat['user_content'] = users_content_vectors
+    dat['user_content_reference'] = users_content_vectors
+
 
     train = pd.read_csv(train_file, delimiter=',', dtype=np.int32).values.ravel().view(
         dtype=[('uid', np.int32), ('iid', np.int32), ('rating', np.int32), ('time', np.int32)]
@@ -341,6 +348,10 @@ def load_data():
                                            train_data=train)
     dat['eval_cold_user'] = data.load_eval_data(test_cold_user_file, test_cold_user_iid_file, name='eval_cold_user',
                                                 cold=True, train_data=train)
+
+    dat['eval_refe_user'] = data.load_eval_data(test_reference_user_file, test_rfeference_user_iid_file, name='predict_refe_user',
+                                                cold=True, train_data=train)
+
 
     return dat
 

@@ -207,3 +207,65 @@ class DeepCF(nn.Module):
             z = y.multiply(x)
             recall.append(np.mean(np.divide((np.sum(z, 1)), np.sum(y, 1))))
         return recall
+
+    def evaluate_reference(self, eval_data, device=None):
+        d = device
+
+        tf_eval_preds_batch = []
+        for (batch, (eval_start, eval_stop)) in enumerate(tqdm(eval_data.eval_batch, desc='eval', leave=False)):
+
+            Uin = np.zeros_like(eval_data.U_pref_test[eval_start:eval_stop, :])
+            Vin = eval_data.V_pref_test
+            Vcontent = eval_data.V_content_test
+
+            if self.phi_u_dim > 0:
+                Ucontent = eval_data.U_content_test[eval_start:eval_stop, :]
+            else:
+                Ucontent = None
+
+            Uin = torch.tensor(Uin).to(torch.float32)
+            Vin = torch.tensor(Vin).to(torch.float32)
+            if Ucontent is not None:
+                Ucontent = torch.tensor(Ucontent).to(torch.float32)
+            if Vcontent is not None:
+                Vcontent = torch.tensor(Vcontent).to(torch.float32)
+            if d is not None:
+                Uin = Uin.to(d)
+                Vin = Vin.to(d)
+                Ucontent = Ucontent.to(d)
+                Vcontent = Vcontent.to(d)
+            U_embedding, V_embedding = self.encode(Uin, Vin, Ucontent, Vcontent)
+            embedding_prod = torch.matmul(U_embedding, V_embedding.t())
+
+            if not eval_data.is_cold:
+                eval_trainR = eval_data.tf_eval_train[batch]
+                embedding_prod = embedding_prod + eval_trainR
+
+            # _, eval_preds = torch.topk(embedding_prod, k=recall_k[-1], sorted=True)
+            # tf_eval_preds_batch.append(eval_preds.detach().cpu().numpy())
+
+            _, eval_preds = torch.topk(embedding_prod, k=100, sorted=True)
+            tf_eval_preds_batch.append(eval_preds.detach().cpu().numpy())
+
+        tf_eval_preds = np.concatenate(tf_eval_preds_batch)
+
+        np.savetxt("ml-1m_reference_recommendations.txt", tf_eval_preds)
+
+
+        # filter non-zero targets
+        # y_nz = [len(x) > 0 for x in eval_data.R_test_inf.rows]
+        # y_nz = np.arange(len(eval_data.R_test_inf.rows))[y_nz]
+        #
+        # preds_all = tf_eval_preds[y_nz, :]
+        #
+        # recall = []
+        # for at_k in tqdm(recall_k, desc='recall', leave=False):
+        #     preds_k = preds_all[:, :at_k]
+        #     y = eval_data.R_test_inf[y_nz, :]
+        #
+        #     x = scipy.sparse.lil_matrix(y.shape)
+        #     x.data = np.array([z.tolist() for z in np.ones_like(preds_k)] + [[]], dtype=object)[:-1]
+        #     x.rows = np.array([z.tolist() for z in preds_k] + [[]], dtype=object)[:-1]
+        #     z = y.multiply(x)
+        #     recall.append(np.mean(np.divide((np.sum(z, 1)), np.sum(y, 1))))
+        # return recall
