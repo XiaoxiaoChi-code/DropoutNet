@@ -12,6 +12,7 @@ import pickle
 import utils
 import data
 import model
+import data_reference
 
 # n_users = 1497020 + 1
 # n_items = 1306054 + 1
@@ -324,7 +325,7 @@ def load_data():
     test_cold_user_iid_file = "contentData/item_ids.txt"
 
     test_reference_user_file = "processedData/reference_users_data.csv"
-    test_rfeference_user_iid_file = "contentData/item_ids.txt"
+    test_reference_user_iid_file = "contentData/item_ids.txt"
 
     dat = {}
     u_pref = pd.read_csv(user_preference_file, header=None).to_numpy()
@@ -352,7 +353,9 @@ def load_data():
     dat['eval_cold_user'] = data.load_eval_data(test_cold_user_file, test_cold_user_iid_file, name='eval_cold_user',
                                                 cold=True, train_data=train)
 
-    dat['eval_refe_user'] = data.load_eval_data(test_reference_user_file, test_rfeference_user_iid_file, name='predict_refe_user',
+    # dat['eval_refe_user'] = data.load_eval_data(test_reference_user_file, test_reference_user_iid_file, name='predict_refe_user',
+    #                                             cold=True, train_data=train)
+    dat['eval_refe_user'] = data_reference.load_eval_data_reference(test_reference_user_file, test_reference_user_iid_file, name='predict_refe_user',
                                                 cold=True, train_data=train)
 
 
