@@ -73,6 +73,9 @@ def main():
     timer.toc('initialized eval_warm').tic()
     eval_cold_user.init_tf(u_pref_scaled, v_pref_scaled, user_content, item_content, eval_batch_size)
     timer.toc('initialized eval_cold_user').tic()
+    eval_refe_user.init_tf(u_pref_scaled, v_pref_scaled, user_content, item_content, eval_batch_size)
+    timer.toc('initialized eval_refe_user').tic()
+
     # eval_cold_item.init_tf(u_pref_scaled, v_pref_scaled, user_content, item_content, eval_batch_size)
     # timer.toc('initialized eval_cold_item').tic()
 
@@ -320,7 +323,7 @@ def load_data():
     test_cold_user_file = "processedData/testing_data_nonmems.csv"
     test_cold_user_iid_file = "contentData/item_ids.txt"
 
-    test_reference_user_file = "processedData/train_data.csv"
+    test_reference_user_file = "processedData/reference_users_data.csv"
     test_rfeference_user_iid_file = "contentData/item_ids.txt"
 
     dat = {}
