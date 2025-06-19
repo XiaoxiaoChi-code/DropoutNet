@@ -51,9 +51,12 @@ def main():
     eval_warm = dat['eval_warm']
     eval_cold_user = dat['eval_cold_user']
     eval_refe_user = dat['eval_refe_user']
+
     # eval_cold_item = dat['eval_cold_item']
     user_content = dat['user_content']
     item_content = dat['item_content']
+    pert_user_content = dat['perturbed_user_content']
+
     u_pref = dat['u_pref']
     v_pref = dat['v_pref']
     user_indices = dat['user_indices']
@@ -74,7 +77,8 @@ def main():
     timer.toc('initialized eval_warm').tic()
     eval_cold_user.init_tf(u_pref_scaled, v_pref_scaled, user_content, item_content, eval_batch_size)
     timer.toc('initialized eval_cold_user').tic()
-    eval_refe_user.init_tf(u_pref_scaled, v_pref_scaled, user_content, item_content, eval_batch_size)
+    # eval_refe_user.init_tf(u_pref_scaled, v_pref_scaled, user_content, item_content, eval_batch_size)
+    eval_refe_user.init_tf(u_pref_scaled, v_pref_scaled, pert_user_content, item_content, eval_batch_size)
     timer.toc('initialized eval_refe_user').tic()
 
     # eval_cold_item.init_tf(u_pref_scaled, v_pref_scaled, user_content, item_content, eval_batch_size)
@@ -341,6 +345,10 @@ def load_data():
     dat['item_content'] = items_content_vectors
     dat['user_content'] = users_content_vectors
     dat['user_content_reference'] = users_content_vectors
+
+    # perturbed user content
+    perturbed_user_content = np.loadtxt("contentData/ml-1m_user_content-perturb.txt")
+    dat['perturbed_user_content'] = perturbed_user_content
 
 
     train = pd.read_csv(train_file, delimiter=',', dtype=np.int32).values.ravel().view(

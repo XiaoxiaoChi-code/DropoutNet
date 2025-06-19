@@ -249,7 +249,8 @@ class DeepCF(nn.Module):
 
         tf_eval_preds = np.concatenate(tf_eval_preds_batch)
 
-        np.savetxt("ml-1m_reference_recommendations.txt", tf_eval_preds)
+        # np.savetxt("ml-1m_reference_recommendations.txt", tf_eval_preds)
+        np.savetxt("ml-1m_perturbation_recommendations.txt", tf_eval_preds)
 
 
         # filter non-zero targets
